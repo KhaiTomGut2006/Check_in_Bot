@@ -12,6 +12,22 @@ const client = new Client({
   partials: [Partials.Channel]
 });
 
+async function sendDataToWebApp(data) {
+  try {
+    const WEB_APP_URL = process.env.WEB_APP_URL;
+    if (!WEB_APP_URL) {
+      console.error("WEB_APP_URL is not defined in .env file!");
+      return;
+    }
+
+    const response = await axios.post(WEB_APP_URL, data);
+    console.log(' Successfully sent data to Web App:', response.data);
+  }
+  catch (error) {
+    console.error(' Error sending data to Web App:', error.message);
+  }
+}
+
 
 async function askQuestion(channel, userId, question) {
   await channel.send(question);
@@ -45,6 +61,17 @@ client.on(Events.GuildMemberAdd, async (member) => {
 
     await dm.send("แจ๋วเลย สรุปคำตอบของน้องคือ:");
     await dm.send(`แหล่งที่เจอ: ${q1}\n• เป้าหมาย: ${q2}\n• พื้นฐาน: ${q3}`);
+
+    const dataToSend = {
+      name: name,
+      nickname: nickname,
+      source: q1,
+      goal: q2,
+      background: q3
+    };
+
+    await sendDataToWebApp(dataToSend);
+    await dm.send("ข้อมูลของน้องถูกบันทึกเรียบร้อยแล้ว ยินดีต้อนรับเข้าสู่เซิร์ฟเวอร์!");
 
   } catch (err) {
     console.error("ส่ง DM ไม่สำเร็จหรือรอข้อความล้มเหลว:", err);
