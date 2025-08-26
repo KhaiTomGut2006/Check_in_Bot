@@ -1,14 +1,15 @@
-const { Client, GatewayIntentBits, Events , Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
+const axios = require('axios');
 require('dotenv').config();
 const token = process.env.DISCORD_TOKEN;
 
 const client = new Client({
-    intents: [GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.DirectMessages],
-    partials: [Partials.Channel]
+  intents: [GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.MessageContent,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.DirectMessages],
+  partials: [Partials.Channel]
 });
 
 
@@ -26,7 +27,7 @@ async function askQuestion(channel, userId, question) {
 }
 
 client.on('clientReady', () => {
-    console.log(`logged in as ${client.user.tag}`)
+  console.log(`logged in as ${client.user.tag}`)
 });
 
 //ตรวจสอบคนที่เข้ามาใหม่
