@@ -5,6 +5,11 @@ const token = process.env.DISCORD_TOKEN;
 
 const prefix = "!";
 
+//เพิ่มยศตรงนี้
+const reactionRoleConfig = {
+  "👑": '1410273521766109255'
+};
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -15,14 +20,9 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.DirectMessageReactions
   ],
-  
-  partials: [Partials.Channel, Partials.Message, Partials.Reaction] 
+
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction]
 });
-
-
-const reactionRoleConfig = {
-  "👑": '1410273521766109255' 
-};
 
 
 const reactionSessions = new Map();
@@ -62,7 +62,7 @@ async function sendRoleRequest(channel) {
     console.error("เกิดข้อผิดพลาดในการเพิ่ม Reaction", error);
   }
 
-  return roleMessage; 
+  return roleMessage;
 }
 
 async function askQuestion(channel, userId, question) {
@@ -77,7 +77,7 @@ client.on(Events.ClientReady, () => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot || !message.guild) return; 
+  if (message.author.bot || !message.guild) return;
   if (message.content === prefix + "checkin") {
     try {
       const member = message.member;
@@ -92,28 +92,32 @@ client.on(Events.MessageCreate, async (message) => {
       const q1 = await askQuestion(dm, member.id, "ไปเจอกิจกรรมนี้จากไหนอ่ะ เช่นแบบ TikTok , CampHub");
       const q2 = await askQuestion(dm, member.id, "เรียนแล้วอยากทำไรต่อออ เช่นแบบ อยากเข้าคณะอะไรมหาลัยไหน");
       const q3 = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้");
+      const why = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้");
+
 
       await dm.send("แจ๋วเลย สรุปคำตอบของน้องคือ:");
-      await dm.send(`แหล่งที่เจอ: ${q1}\n• เป้าหมาย: ${q2}\n• พื้นฐาน: ${q3}`);
+      await dm.send(`• แหล่งที่เจอ: ${q1}\n• เป้าหมาย: ${q2}\n• พื้นฐาน: ${q3}`);
 
       const dataToSend = {
         Name_Surname: name,
         Nickname: nickname,
+        Why: why,
         From: q1,
         Goal: q2,
         Basic: q3
       };
 
-      await sendDataToWebApp(dataToSend);
-      await dm.send("ข้อมูลของน้องถูกบันทึกเรียบร้อยแล้ว ขั้นตอนสุดท้ายคือการเลือกยศนะ!");
-      
+
+      await dm.send("ขั้นตอนสุดท้ายคือการเลือกยศนะ!");
+
       // ส่งข้อความเลือกยศ และบันทึกเซสชัน
       const roleMessage = await sendRoleRequest(dm);
       reactionSessions.set(roleMessage.id, {
         guildId: member.guild.id,
         userId: member.id
       });
-
+      await sendDataToWebApp(dataToSend);
+      await dm.send("ข้อมูลของน้องถูกบันทึกเรียบร้อยแล้ว ");
     } catch (err) {
       console.error("ส่ง DM ไม่สำเร็จหรือรอข้อความล้มเหลว:", err);
       await message.reply("อ๊ะ! พี่ส่ง DM ไปหาน้องไม่ได้แฮะ ลองเช็คการตั้งค่าความเป็นส่วนตัวแล้วลองอีกครั้งนะ");
@@ -152,12 +156,12 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
         if (!member) return;
 
         const role = guild.roles.cache.get(roleId);
-        console.log(`[DEBUG] Attempting to find role. Role ID: ${roleId}. Found role:`, role ? role.name : 'Not Found');  
+        console.log(`[DEBUG] Attempting to find role. Role ID: ${roleId}. Found role:`, role ? role.name : 'Not Found');
         if (!role) return;
 
         await member.roles.add(role);
         console.log(`เพิ่มยศ '${role.name}' ให้กับ ${user.tag} ในเซิร์ฟเวอร์ ${guild.name}`);
-        
+
         await user.send(`รับทราบ! พี่ได้มอบยศ **${role.name}** ให้เรียบร้อยแล้วในเซิร์ฟเวอร์ **${guild.name}**`);
 
         // ลบเซสชันออกเมื่อทำงานเสร็จ
