@@ -90,9 +90,9 @@ client.on(Events.MessageCreate, async (message) => {
       const name = await askQuestion(dm, member.id, "ไหนขอ ชื่อ-นามสกุล เราหน่อย");
       const nickname = await askQuestion(dm, member.id, "เอ้ย ลืมถามชื่อเล่นของชื่อเล่นหน่อย");
       const q1 = await askQuestion(dm, member.id, "ไปเจอกิจกรรมนี้จากไหนอ่ะ เช่นแบบ TikTok , CampHub");
+      const why = await askQuestion(dm, member.id, "เออว่าแต่พี่สงสัยอ่ะทำไมเราถึงสมัครคอร์สนี้อ่ะอะไรที่แบบทำให้เราตัดสินใจสมัครเข้ามาตอนเราเจองานนี้");
       const q2 = await askQuestion(dm, member.id, "เรียนแล้วอยากทำไรต่อออ เช่นแบบ อยากเข้าคณะอะไรมหาลัยไหน");
       const q3 = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้");
-      const why = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้");
 
 
       await dm.send("แจ๋วเลย สรุปคำตอบของน้องคือ:");
