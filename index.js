@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
 const axios = require('axios');
 require('dotenv').config();
 const token = process.env.DISCORD_TOKEN;
-
+const prefix = "!";
 const client = new Client({
   intents: [GatewayIntentBits.Guilds,
   GatewayIntentBits.GuildMessages,
@@ -47,35 +47,47 @@ client.on('clientReady', () => {
 });
 
 //ตรวจสอบคนที่เข้ามาใหม่
-client.on(Events.GuildMemberAdd, async (member) => {
-  try {
-    const dm = await member.createDM();
+client.on(Events.MessageCreate, async (message) => {
+  if (message.author.bot) {
+    return;
+  }
+  else if (message.content === prefix + "checkin") {
+    try {
+      const member = message.member;
+      const dm = await member.createDM();
 
-    await dm.send(`### โย่ว  @${member.user.username} ว่าไงไอน้อง ก่อนเราจะไปลุยกันในดิสพี่ขอถามอะไรหน่อย`);
-    await dm.send("### อย่างแรกถ้าเห็นข้อความนี้แล้วอยากให้น้องช่วยตอบคำถามนิดหน่อย ช่วยตอบตามความจริงด้วยน้าเพราะมีผลต่อการส่งต่อคอร์สเรียนของน้องนะเว้ยย");
-    const name = await askQuestion(dm, member.id, "ไหนขอ ชื่อ-นามสกุล เราหน่อย")
-    const nickname = await askQuestion(dm, member.id, "เอ้ย ลืมถามชื่อเล่นของชื่อเล่นหน่อย")
-    const q1 = await askQuestion(dm, member.id, "ไปเจอกิจกรรมนี้จากไหนอ่ะ เช่นแบบ TikTok , CampHub");
-    const q2 = await askQuestion(dm, member.id, "เรียนแล้วอยากทำไรต่อออ เช่นแบบ อยากเข้าคณะอะไรมหาลัยไหน");
-    const q3 = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้");
+      await dm.send(`### โย่ว  @${member.user.username} ว่าไงไอน้อง ก่อนเราจะไปลุยกันในดิสพี่ขอถามอะไรหน่อย`);
+      await dm.send("### อย่างแรกถ้าเห็นข้อความนี้แล้วอยากให้น้องช่วยตอบคำถามนิดหน่อย ช่วยตอบตามความจริงด้วยน้าเพราะมีผลต่อการส่งต่อคอร์สเรียนของน้องนะเว้ยย");
+      const name = await askQuestion(dm, member.id, "ไหนขอ ชื่อ-นามสกุล เราหน่อย")
+      const nickname = await askQuestion(dm, member.id, "เอ้ย ลืมถามชื่อเล่นของชื่อเล่นหน่อย")
+      const q1 = await askQuestion(dm, member.id, "ไปเจอกิจกรรมนี้จากไหนอ่ะ เช่นแบบ TikTok , CampHub");
+      const q2 = await askQuestion(dm, member.id, "เรียนแล้วอยากทำไรต่อออ เช่นแบบ อยากเข้าคณะอะไรมหาลัยไหน");
+      const q3 = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้");
 
-    await dm.send("แจ๋วเลย สรุปคำตอบของน้องคือ:");
-    await dm.send(`แหล่งที่เจอ: ${q1}\n• เป้าหมาย: ${q2}\n• พื้นฐาน: ${q3}`);
+      await dm.send("แจ๋วเลย สรุปคำตอบของน้องคือ:");
+      await dm.send(`แหล่งที่เจอ: ${q1}\n• เป้าหมาย: ${q2}\n• พื้นฐาน: ${q3}`);
 
-    const dataToSend = {
-      Name_Surname: name,
-      Nickname: nickname,
-      From: q1,
-      Goal: q2,
-      Basic: q3
-    };
+      const dataToSend = {
+        Name_Surname: name,
+        Nickname: nickname,
+        From: q1,
+        Goal: q2,
+        Basic: q3
+      };
 
-    await sendDataToWebApp(dataToSend);
-    await dm.send("ข้อมูลของน้องถูกบันทึกเรียบร้อยแล้ว ยินดีต้อนรับเข้าสู่เซิร์ฟเวอร์น้า!");
+      await sendDataToWebApp(dataToSend);
+      await dm.send("ข้อมูลของน้องถูกบันทึกเรียบร้อยแล้ว ยินดีต้อนรับเข้าสู่เซิร์ฟเวอร์น้า!");
 
-  } catch (err) {
-    console.error("ส่ง DM ไม่สำเร็จหรือรอข้อความล้มเหลว:", err);
+    } catch (err) {
+      console.error("ส่ง DM ไม่สำเร็จหรือรอข้อความล้มเหลว:", err);
+    }
+  }
+  else
+  {
+    return;
   }
 });
+
+
 
 client.login(token);
