@@ -7,7 +7,7 @@ const prefix = "!";
 
 //เพิ่มยศตรงนี้
 const reactionRoleConfig = {
-  "👑": '1410273521766109255'
+  "👑": '1410273271588585567'
 };
 
 const client = new Client({
