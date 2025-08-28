@@ -89,18 +89,18 @@ client.on(Events.MessageCreate, async (message) => {
       await dm.send("### อย่างแรกถ้าเห็นข้อความนี้แล้วอยากให้น้องช่วยตอบคำถามนิดหน่อย...");
       const name = await askQuestion(dm, member.id, "ไหนขอ ชื่อ-นามสกุล เราหน่อย");
       const nickname = await askQuestion(dm, member.id, "เอ้ย ลืมถามชื่อเล่นของชื่อเล่นหน่อย");
+      const age = await askQuestion(dm, member.id, "อายุเท่าใหร่วะน้อง");
       const q1 = await askQuestion(dm, member.id, "ไปเจอกิจกรรมนี้จากไหนอ่ะ เช่นแบบ TikTok , CampHub");
-      const why = await askQuestion(dm, member.id, "เออว่าแต่พี่สงสัยอ่ะทำไมเราถึงสมัครคอร์สนี้อ่ะอะไรที่แบบทำให้เราตัดสินใจสมัครเข้ามาตอนเราเจองานนี้");
+      const why = await askQuestion(dm, member.id, "จากข้อที่แล้วอะไรในตัวโฆษณาที่แบบทำให้เราตัดสินใจสมัครมา เช่น ชอบเนื้อหาในคลิป , โปรโมชั่นน่าสนใจ , ชอบในตัวคอร์ส");
       const q2 = await askQuestion(dm, member.id, "เรียนแล้วอยากทำไรต่อออ เช่นแบบ อยากเข้าคณะอะไรมหาลัยไหน");
       const q3 = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้");
 
-
-      await dm.send("แจ๋วเลย สรุปคำตอบของน้องคือ:");
-      await dm.send(`• แหล่งที่เจอ: ${q1}\n• เป้าหมาย: ${q2}\n• พื้นฐาน: ${q3}`);
-
+      await dm.send("แจ๋วเลย");
+      
       const dataToSend = {
         Name_Surname: name,
         Nickname: nickname,
+        Age : age,
         Why: why,
         From: q1,
         Goal: q2,
