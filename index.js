@@ -127,7 +127,6 @@ client.on(Events.MessageCreate, async (message) => {
 
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
-  console.log("อิโมจิทำงาน");
   if (reaction.partial) {
     try {
       console.log("fetching reaction!!");
