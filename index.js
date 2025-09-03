@@ -112,7 +112,10 @@ client.on(Events.MessageCreate, async (message) => {
     try {
       const member = message.member;
       const dm = await member.createDM();
-      
+
+      // Log UserId to the terminal
+      console.log(`UserId: ${member.id}`);
+
       await dm.send(`### โย่ว @${member.user.username} ว่าไงไอน้อง ก่อนเราจะไปลุยกันในดิสพี่ขอถามอะไรหน่อย`);
       await dm.send("### อย่างแรกถ้าเห็นข้อความนี้แล้วอยากให้น้องช่วยตอบคำถามนิดหน่อยตั้งใจตอบนะเพราะคำตอบมีผลต่อการต่อคอร์สของน้องในอนาคต");
       const name = await askQuestion(dm, member.id, "ไหนขอ ชื่อ-นามสกุล เราหน่อย  \n[ตัวอย่างคำตอบ: นาย แฮมเต้อ หล่อดี]");
@@ -123,7 +126,7 @@ client.on(Events.MessageCreate, async (message) => {
       const q2 = await askQuestion(dm, member.id, "เรียนแล้วอยากทำไรต่อออ เช่นแบบ อยากเข้าคณะอะไรมหาลัยไหน  \n[ตัวอย่างคำตอบ: วิศวะคอมพิวเตอร์ ม.มหิดล ]");
       const q3 = await askQuestion(dm, member.id, "เคยเรียนหรือทำไรมาก่อนป่าว เช่น สร้างเกม Roblox เคยเขียนโค้ดจากที่โรงเรียนงี้  \n[ตัวอย่างคำตอบ: เคยเขียนPythonมาจากโรงเรียน ]");
       const project = await askQuestion(dm, member.id, "ละน้องมีโปรเจคที่อยากทำมั้ย ถ้าตอนนี้คิดไม่ออกเดี๋ยวจบกิจกรรมมาบอกพี่ก็ได้แบบ อยากทำโปรเจคแนวไหน เล่าไอเดียให้ฟังหน่อย");
-      const line = await askQuestion(dm,member.id,"สุดท้ายละๆๆ ไลน์ที่เราใช้สมัครมาชื่ออะไรนะ \n[ตัวอย่างคำตอบ : พิมพ์แค่ชื่อ Account ไลน์ของน้อง ]");
+      const line = await askQuestion(dm, member.id, "สุดท้ายละๆๆ ไลน์ที่เราใช้สมัครมาชื่ออะไรนะ \n[ตัวอย่างคำตอบ : พิมพ์แค่ชื่อ Account ไลน์ของน้อง ]");
       
       await dm.send("แจ๋วเลย");
 
