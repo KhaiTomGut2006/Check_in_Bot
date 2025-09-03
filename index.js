@@ -60,11 +60,11 @@ async function sendDataToWebApp(data) {
       return null;
     }
     const response = await axios.post(WEB_APP_URL, data);
-    console.log(' Successfully sent data to Web App:', response.data);
-    return response.data.row; 
+    console.log('Successfully sent data to Web App:', response.data);
+    return response.data.row;
   } catch (error) {
-    console.error(' Error sending data to Web App:', error.message);
-    return null; 
+    console.error('Error sending data to Web App:', error.message);
+    return null;
   }
 }
 
@@ -129,6 +129,7 @@ client.on(Events.MessageCreate, async (message) => {
 
       // เก็บข้อมูลทั้งหมดไว้ใน Object เพื่อรอการเลือกยศ
       const collectedData = {
+        UserId: member.id, // Include userId in the data
         Name_Surname: name,
         Nickname: nickname,
         Age: age,
@@ -140,7 +141,15 @@ client.on(Events.MessageCreate, async (message) => {
         Line : line
       };
 
-      await dm.send("ขั้นตอนสุดท้ายคือการเลือกยศนะ!");
+      // Send data to the Web App
+      const rowNumber = await sendDataToWebApp(collectedData);
+
+      if (!rowNumber) {
+        await dm.send("ขออภัย! เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาติดต่อแอดมิน");
+        return;
+      }
+
+      await dm.send("ข้อมูลของน้องถูกบันทึกเรียบร้อยแล้ว!");
 
       // ส่งข้อความเลือกยศ และบันทึกข้อมูลที่เก็บมาทั้งหมดลงใน session
       const roleMessage = await sendRoleRequest(dm);
