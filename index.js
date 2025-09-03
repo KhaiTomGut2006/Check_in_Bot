@@ -52,6 +52,9 @@ const client = new Client({
 
 const reactionSessions = new Map();
 
+// สร้าง Set เพื่อเก็บ UserId ของผู้ที่เคยใช้ !checkin
+const allCheckedInUsers = new Set();
+
 async function sendDataToWebApp(data) {
   try {
     const WEB_APP_URL = process.env.WEB_APP_URL;
@@ -108,13 +111,16 @@ client.on(Events.ClientReady, () => {
 // --- [แก้ไข] ส่วน !checkin จะทำหน้าที่เก็บข้อมูลเท่านั้น ---
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot || !message.guild) return;
+
+  // คำสั่ง !checkin
   if (message.content === prefix + "checkin") {
     try {
       const member = message.member;
       const dm = await member.createDM();
 
-      // Log UserId to the terminal
+      // Log UserId และเพิ่ม UserId ลงใน Set
       console.log(`UserId: ${member.id}`);
+      allCheckedInUsers.add(member.id);
 
       await dm.send(`### โย่ว @${member.user.username} ว่าไงไอน้อง ก่อนเราจะไปลุยกันในดิสพี่ขอถามอะไรหน่อย`);
       await dm.send("### อย่างแรกถ้าเห็นข้อความนี้แล้วอยากให้น้องช่วยตอบคำถามนิดหน่อยตั้งใจตอบนะเพราะคำตอบมีผลต่อการต่อคอร์สของน้องในอนาคต");
@@ -166,6 +172,55 @@ client.on(Events.MessageCreate, async (message) => {
       console.error("ส่ง DM ไม่สำเร็จหรือรอข้อความล้มเหลว:", err);
       await message.reply("อ๊ะ! พี่ส่ง DM ไปหาน้องไม่ได้แฮะ ลองเช็คการตั้งค่าความเป็นส่วนตัวแล้วลองอีกครั้งนะ");
     }
+  }
+
+  // คำสั่ง !announce สำหรับแอดมิน
+  if (message.content.startsWith(prefix + "announce ")) {
+    // ตรวจสอบสิทธิ์ผู้ดูแลเซิร์ฟเวอร์
+    if (!message.member.permissions.has('Administrator')) {
+      return message.reply("❌ คุณไม่มีสิทธิ์ในการใช้คำสั่งนี้ (ต้องเป็นผู้ดูแลเซิร์ฟเวอร์)");
+    }
+
+    const args = message.content.slice((prefix + "announce ").length).trim().split('|');
+    const announcement = args[0]?.trim(); // ข้อความประกาศ
+    const imagePath = args[1]?.trim(); // Path ของรูปภาพ (ถ้ามี)
+
+    if (!announcement) {
+      return message.reply("กรุณาใส่ข้อความที่ต้องการส่ง เช่น `!announce สวัสดีทุกคน! | ./path/to/image.png`");
+    }
+
+    let sentCount = 0;
+    let errorCount = 0;
+
+    // ดึง UserId ทั้งหมดจาก allCheckedInUsers
+    const userIds = Array.from(allCheckedInUsers);
+
+    if (userIds.length === 0) {
+      return message.reply("ไม่มีผู้ใช้ที่สามารถส่งข้อความได้");
+    }
+
+    await message.reply(`📤 กำลังส่งข้อความหา ${userIds.length} คน...`);
+
+    for (const userId of userIds) {
+      try {
+        const user = await client.users.fetch(userId);
+
+        // สร้าง payload สำหรับการส่งข้อความ
+        const payload = { content: announcement };
+        if (imagePath) {
+          payload.files = [imagePath]; // เพิ่มรูปภาพถ้ามี
+        }
+
+        await user.send(payload);
+        sentCount++;
+        await new Promise(resolve => setTimeout(resolve, 1000)); // หน่วงเวลา 1 วินาที ป้องกัน rate limit
+      } catch (error) {
+        console.error(`ไม่สามารถส่งข้อความหา ${userId} ได้:`, error.message);
+        errorCount++;
+      }
+    }
+
+    await message.reply(`✅ ส่งสำเร็จ: ${sentCount} คน | ❌ ส่งไม่สำเร็จ: ${errorCount} คน`);
   }
 });
 
