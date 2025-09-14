@@ -8,7 +8,7 @@ const prefix = "!";
 const courseConfig = {
   "⭐": { // Key คือ Emoji
     roleId: '1388546120912998554',
-    courseName: 'THREE', 
+    courseName: 'THREE',
     displayName: 'Starways',
     sheetName: 'Starways'
   },
@@ -95,6 +95,36 @@ client.on(Events.ClientReady, () => {
   console.log(`logged in as ${client.user.tag}`);
 });
 
+client.on(Events.MessageCreate, async (message) => {
+  if (message.author.bot || !message.guild) return;
+
+  if (message.content.startsWith(prefix + "ads")) {
+    const args = message.content.slice(prefix.length).trim().split(/ +/); 
+    const command = args.shift().toLowerCase(); 
+
+    if(command === 'ads') {
+      const userID = args[0]; 
+      const dmMessage = args.slice(1).join(" "); 
+
+      if (!userID) {
+        return message.channel.send("โปรดระบุ User ID ที่ต้องการส่งข้อความถึง");
+      }
+      if (!dmMessage) {
+        return message.channel.send("โปรดระบุข้อความที่ต้องการส่ง");
+      }
+
+      try {
+        const user = await client.users.fetch(userID);
+        await user.send(dmMessage);
+        message.channel.send(`ส่งข้อความ "${dmMessage}" ไปยังผู้ใช้ ${user.tag} เรียบร้อยแล้ว`);
+
+      } catch (err) {
+        console.error("เกิดข้อผิดพลาดในการส่ง DM:", err); 
+        await message.reply("ไม่สามารถส่งข้อความส่วนตัวไปยังผู้ใช้นี้ได้ อาจเป็นเพราะผู้ใช้ปิด DM หรือบอทไม่ได้อยู่ในเซิร์ฟเวอร์เดียวกันกับผู้ใช้");
+      }
+    }
+  }
+});
 
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot || !message.guild) return;
@@ -104,7 +134,7 @@ client.on(Events.MessageCreate, async (message) => {
     try {
       const member = message.member;
       const dm = await member.createDM();
-      
+
       await dm.send(`### โย่ว @${member.user.username} ว่าไงไอน้อง ก่อนเราจะไปลุยกันในดิสพี่ขอถามอะไรหน่อย`);
       await dm.send("### อย่างแรกถ้าเห็นข้อความนี้แล้วอยากให้น้องช่วยตอบคำถามนิดหน่อยตั้งใจตอบนะเพราะคำตอบมีผลต่อการต่อคอร์สของน้องในอนาคต");
       const name = await askQuestion(dm, member.id, "ไหนขอ ชื่อ-นามสกุล เราหน่อย  \n[ตัวอย่างคำตอบ: นาย แฮมเต้อ หล่อดี]");
@@ -173,7 +203,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
           reactionSessions.delete(reaction.message.id);
           return;
         }
-        
+
         // เมื่อบันทึกสำเร็จ ให้เพิ่ม UserId เข้าไปใน Set
         allCheckedInUsers.add(user.id);
         console.log(`User ${user.id} added to announcement list. Total users: ${allCheckedInUsers.size}`);
